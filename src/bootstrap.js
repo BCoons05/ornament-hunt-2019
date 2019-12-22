@@ -69,14 +69,16 @@ function changePlayerTurn(){
     
     switch(activePlayer){
         case 'player1':
-        console.log('Player1 turn');
-        activePlayerHand = playerOneHand
-        break
+            window.alert("Kaden's Turn")
+            // console.log('Player1 turn');
+            activePlayerHand = playerOneHand
+            break
 
         case 'player2':
-        console.log(`Player2 turn`);
-        activePlayerHand = playerTwoHand
-        break
+            window.alert("Kaia's Turn")
+            // console.log(`Player2 turn`);
+            activePlayerHand = playerTwoHand
+            break
         
         case 'dealer':
             console.log('Dealer turn');
@@ -141,13 +143,13 @@ function playerTurn(){
     playerTwoHandValue = valueOfPlayerHand(playerTwoHand)
     dealerHandValue = valueOfPlayerHand(dealerHand)
 
-    console.log(`Dealer has :${dealerHandValue}`);
+    // console.log(`Dealer has :${dealerHandValue}`);
     
-    console.log(`your hand value is: ${activeHandValue}`)
+    // console.log(`your hand value is: ${activeHandValue}`)
 
     // logic for hit and stay - it will stop running if you bust, otherwise it will do a prompt and ask what you want, then update your hand value with the new card
     if(activeHandValue < 21){
-        let choice = window.prompt('H to hit, S to stay')
+        let choice = window.prompt(`Dealer has :${dealerHandValue}, your hand value is: ${activeHandValue}... press H to hit, S to stay`)
         if(choice.toLowerCase() === "h"){
             console.log("HIT!")
             draw()
@@ -158,14 +160,14 @@ function playerTurn(){
             console.log(`hand value is: ${activeHandValue}`);
             changePlayerTurn()
         }else{
-            console.log('Wrong input');
+            window.alert('Wrong input');
             playerTurn()
         }
     }else if(activeHandValue == 21){
-        console.log('21!');
+        window.alert('21!');
         changePlayerTurn()
     }else{
-        console.log('You Busted!');
+        window.alert('You Busted!');
         changePlayerTurn()
     }
 }
@@ -174,10 +176,10 @@ function playerTurn(){
 function dealerTurn(){
 
     while(dealerHandValue < 17){
-        console.log('Dealer hits!');
+        window.alert('Dealer hits!');
         draw()
         dealerHandValue = valueOfPlayerHand(activePlayerHand)
-        console.log(`Dealer has ${dealerHandValue}`);
+        window.alert(`Dealer has ${dealerHandValue}`);
     }
     endRound()
 }
@@ -208,11 +210,17 @@ function endRound(){
         playerTwoResult = 'lose'
     }
 
-    console.log(`player 1 had: ${playerOneHandValue}`);
-    console.log(`player 2 had: ${playerTwoHandValue}`)
-    console.log(`dealer had: ${dealerHandValue}`)
-    console.log(`player one you ${playerOneResult}, player two you ${playerTwoResult}`)
-    resetGame()
+    window.alert(`Kaden had: ${playerOneHandValue}, Kaia had: ${playerTwoHandValue}, dealer had: ${dealerHandValue}... Kaden you ${playerOneResult}, Kaia you ${playerTwoResult}`)
+    // console.log(`player 1 had: ${playerOneHandValue}`);
+    // console.log(`player 2 had: ${playerTwoHandValue}`)
+    // console.log(`dealer had: ${dealerHandValue}`)
+    // console.log(`player one you ${playerOneResult}, player two you ${playerTwoResult}`)
+
+    if(playerOneResult == 'win' && playerOneResult == 'win'){
+        startTrivia()
+    }else{
+        resetGame()
+    }
 }
 
 // when we start a new game, this will clear all hands and values then go start a new game
@@ -234,5 +242,203 @@ function resetGame(){
     playGame()
 }
 
+let answer = ''
+let questions = ['1','2','3','4','5','6','7','8','9','10', '11', '12', '13', '14', '15']
+let correctQuestions = []
+let qString = ''
+let wrongAnswers = 0
+
+function startTrivia(){
+    pickRandomQuestion(questions)
+}
+
+function pickRandomQuestion(arr){
+    let randomNum = Math.floor(Math.random() * arr.length)
+    console.log(`questions array: ${questions}`);
+    qString = questions[randomNum]
+    console.log(`questionNum = ${qString}`);
+    askQuestion(qString)
+}
+
+function removeCorrect(questionNum){
+    questionNum = questions.indexOf(questionNum)
+    let correctQuestion = questions.splice(questionNum, 1)
+    correctQuestions.push(correctQuestion)
+    pickRandomQuestion(questions)
+}
+
+function askQuestion(questionNum){
+    console.log(`questions array: ${questions}`);
+    switch(questionNum){
+        case '1':
+            answer = window.prompt('Where was Jesus born?')
+            if(answer.toLowerCase() == 'bethlehem'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+        case '2':
+            answer = window.prompt('What did Jesus and his disciples eat at the last supper?')
+            if(answer.toLowerCase() == 'bread'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+        case '3':
+        answer = window.prompt('How old was Jesus when he was baptized?')
+            if(answer == '30'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+        case '4':
+            answer = window.prompt('What does the word Noel mean in Latin?')
+            if(answer.toLowerCase() == 'birth'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+        case '5':
+            answer = window.prompt('Who did the German Nazi Regime replace Santa Claus with?')
+            if(answer.toLowerCase() == 'odin'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+        case '6':
+            answer = window.prompt('What year did NORAD start tracking Santa on Christmas Eve?')
+            if(answer.toLowerCase() == '1955'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+        case '7':
+            answer = window.prompt('What is given on the 11th day of Christmas?')
+            if(answer.toLowerCase() == '11 pipers piping'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+        case '8':
+            answer = window.prompt('In what country did the custom of putting up a christmas tree originate?')
+            if(answer.toLowerCase() == 'germany'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+        case '9':
+            answer = window.prompt('What was the first year that the Rockelfeller Christmas tree was put up?')
+            if(answer.toLowerCase() == '1933'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+        case '10':
+            answer = window.prompt('What state holds the world record for largest snowman?')
+            if(answer.toLowerCase() == 'maine'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+            case '11':
+            answer = window.prompt('How many elves are on the christmas tree?')
+            if(answer.toLowerCase() == '3'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+            case '12':
+            answer = window.prompt('Where is jinglebell today?')
+            if(answer.toLowerCase() == 'train'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+            case '13':
+            answer = window.prompt('Finish the quote: "Every time a bell rings..."')
+            if(answer.toLowerCase() == "an angel gets it's wings"){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+            case '14':
+            answer = window.prompt("Finish the quote: Why don't you just say it? I'm the worst toy maker in the world. I'm a..." )
+            if(answer.toLowerCase() == 'cotton headed ninny muggins'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+            case '15':
+            answer = window.prompt('Finish the quote: "Look, if it bothers you, you can dye it, and you..."')
+            if(answer.toLowerCase() == 'should diet'){
+                window.alert('Correct!')
+                removeCorrect(questionNum)
+            }else{
+                window.alert('Nope!')
+                wrongAnswers +=1
+            }
+            break
+    }
+
+    console.log(questions);
+
+    if(questions.length != 0){
+        pickRandomQuestion(questions)
+    }else{
+        window.alert(`Finally! You had ${wrongAnswers} wrong answers...`)
+        startMap()
+    }
+}
+
+function startMap(){
+    window.alert('Congratulations, you have reached the final test')
+    window.alert('Your ornaments have been hidden and the only clue we have is on the next page... But be careful, because once you close the next window, you cannot get it back unless you complete the whole test again')
+    window.alert(`Magical Infants Chased Random Orphans While America Vanished Everyday`)
+}
+
 // starts the game and runs the loop through all the functions
-playGame()  
+playGame()
+// startTrivia()  
+// startMap()
