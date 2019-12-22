@@ -1,13 +1,3 @@
-# ES6 Starter Project
+# Ornament hunt 2019 has arrived!!
 
-## Instructions after generating the project
-
-- Change into the directory and run `npm install` to install the dependencies
-- Add initial code to the src/bootstrap.js file, it will be the root file for your ES6 projects
-- Run `npm start`
-- Visit localhost:3000 in the browser and you should see the running application. If you are running console log statements they will appear in the browser's JS console.
-
-
-> Provided for the students of the [Bottega Code School](https://bottega.tech/)
-
-*Fork from [es6-webpack2-starter](https://github.com/micooz/es6-webpack2-starter)*
+our family has a tradition of getting a new christmas ornament every year, but I make the kids find them in some different way each time. This is the one for this year
