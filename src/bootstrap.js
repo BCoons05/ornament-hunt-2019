@@ -14,6 +14,12 @@ let turnCounter = 0
 let playerOneResult =''
 let playerTwoResult =''
 let myDeck
+let playerOneChipCount = 100
+let playerTwoChipCount = 100
+let playerOneBet = 0
+let playerTwoBet = 0
+let activePlayerChipCount
+let activePlayerBet
 
 
 // Class to create a deck
@@ -35,7 +41,7 @@ class Deck {
 function playGame(){
     let playAgain = window.prompt('Play BlackJack? Y/N')
     if(playAgain.toLowerCase() == 'y'){roundStart()}
-    else{console.log('Quitting game...')}
+    else{window.alert('Quitting game...')}
 }
 
 // at the start of each round we create a new deck of 52 cards, then deal 1 card to the dealer and update the value of his hand, then run changePlayerTurn
@@ -63,25 +69,26 @@ function draw(){
     activePlayerHand.push(drawnCard)
 }
 
-// sets the current player to the player in the players array, then if the player name matches the case then it logs who's turn it is and sets their hand to the active hand
+// sets the current player to the player in the players array, then if the player name matches the case then it alerts who's turn it is and sets their hand to the active hand
 function changePlayerTurn(){
     activePlayer = players[pCounter]
+    activePlayerBet = 0
     
     switch(activePlayer){
         case 'player1':
-            window.alert("Kaden's Turn")
-            // console.log('Player1 turn');
+            window.alert("Player 1 Turn")
             activePlayerHand = playerOneHand
+            activePlayerChipCount = playerOneChipCount
             break
 
         case 'player2':
-            window.alert("Kaia's Turn")
-            // console.log(`Player2 turn`);
+            window.alert("Player 2 Turn")
             activePlayerHand = playerTwoHand
+            activePlayerChipCount = playerTwoChipCount
             break
         
         case 'dealer':
-            console.log('Dealer turn');
+            window.alert('Dealer turn');
             activePlayerHand = dealerHand
             break
         }
@@ -128,59 +135,105 @@ const valueOfPlayerHand = (playersHand) => {
 
 
 function playerTurn(){
+    // Check to see if the active player has any chips left, if not it will skip their turn
+    if(activePlayerChipCount > 0){
+        // if player hasn't bet yet then go to betting phase
+        if(activePlayerBet <= 0){
+            bettingPhase()
+        }
 
-    // if it is the first turn then the player will have no cards, so this will see if the hand is empty and if it is then it deals 2 cards
-    if(activePlayerHand.length == 0){
-        draw()
-        draw()
-    }
-
-    // set the current player hand value to the value of the current player hand
-    activeHandValue = valueOfPlayerHand(activePlayerHand)
-
-    // updates each players hand value based on the cards they now have
-    playerOneHandValue = valueOfPlayerHand(playerOneHand)
-    playerTwoHandValue = valueOfPlayerHand(playerTwoHand)
-    dealerHandValue = valueOfPlayerHand(dealerHand)
-
-    // console.log(`Dealer has :${dealerHandValue}`);
-    
-    // console.log(`your hand value is: ${activeHandValue}`)
-
-    // logic for hit and stay - it will stop running if you bust, otherwise it will do a prompt and ask what you want, then update your hand value with the new card
-    if(activeHandValue < 21){
-        let choice = window.prompt(`Dealer has :${dealerHandValue}, your hand value is: ${activeHandValue}... press H to hit, S to stay`)
-        if(choice.toLowerCase() === "h"){
-            console.log("HIT!")
+        // if it is the first turn then the player will have no cards, so this will see if the hand is empty and if it is then it deals 2 cards
+        if(activePlayerHand.length == 0){
             draw()
+            draw()
+            // set the current player hand value to the value of the current player hand
             activeHandValue = valueOfPlayerHand(activePlayerHand)
-            // console.log(`hand value is: ${activeHandValue}`);
-            playerTurn()
-        }else if(choice.toLowerCase() === "s"){
-            console.log(`hand value is: ${activeHandValue}`);
+            bettingPhase()
+        }
+
+        // updates each players hand value based on the cards they now have
+        playerOneHandValue = valueOfPlayerHand(playerOneHand)
+        playerTwoHandValue = valueOfPlayerHand(playerTwoHand)
+        dealerHandValue = valueOfPlayerHand(dealerHand)
+
+        // logic for hit and stay - it will stop running if you bust, otherwise it will do a prompt and ask what you want, then update your hand value with the new card
+        if(activeHandValue < 21){
+            let choice = window.prompt(`Dealer has: ${dealerHandValue}, your hand value is: ${activeHandValue}... press H to hit, S to stay`)
+            if(choice.toLowerCase() === "h"){
+                draw()
+                activeHandValue = valueOfPlayerHand(activePlayerHand)
+                // console.log(`hand value is: ${activeHandValue}`);
+                playerTurn()
+            }else if(choice.toLowerCase() === "s"){
+                changePlayerTurn()
+            }else{
+                window.alert('Wrong input');
+                playerTurn()
+            }
+        }else if(activeHandValue == 21){
+            window.alert('21!');
             changePlayerTurn()
         }else{
-            window.alert('Wrong input');
-            playerTurn()
+            window.alert('You Busted!');
+            changePlayerTurn()
         }
-    }else if(activeHandValue == 21){
-        window.alert('21!');
-        changePlayerTurn()
     }else{
-        window.alert('You Busted!');
-        changePlayerTurn()
+        playerOutOfMoney()
     }
 }
 
+function bettingPhase(){
+    if(activeHandValue > 0){
+        activePlayerBet = parseInt(window.prompt(`Dealer has: ${dealerHandValue}, you have ${activeHandValue}. Your current chip count is ${activePlayerChipCount}, enter your bet amount ($5 minimum): `))
+    }else{
+        activePlayerBet = parseInt(window.prompt(`Your current chip count is ${activePlayerChipCount}, enter your bet amount ($5 minimum): `))
+    }
+
+    if(activePlayerBet <= activePlayerChipCount && activePlayerBet >= 5){
+        activePlayerChipCount -= activePlayerBet
+        switch(activePlayer){
+            case 'player1':
+                playerOneBet = activePlayerBet
+                playerOneChipCount = activePlayerChipCount
+                break
+            case 'player2':
+                playerTwoBet = activePlayerBet
+                playerTwoChipCount = activePlayerChipCount
+                break
+            case 'dealer':
+                break
+        }
+    }else if(activePlayerBet < 5){
+        window.alert('minimum bet must be at least $5')
+        bettingPhase()
+    }
+    
+    playerTurn()
+}
+
+
+
 // dealer logic - dealer will hit automatically as long as their handvalue is under 17, they will stay at 17. then it will update their hand value after each hit
 function dealerTurn(){
+    draw()
+    dealerHandValue = valueOfPlayerHand(activePlayerHand)
+    window.alert(`Dealer has ${dealerHandValue}`)
 
-    while(dealerHandValue < 17){
-        window.alert('Dealer hits!');
-        draw()
-        dealerHandValue = valueOfPlayerHand(activePlayerHand)
-        window.alert(`Dealer has ${dealerHandValue}`);
+    if(dealerHandValue < 17){
+        while(dealerHandValue < 17){
+            window.alert('Dealer hits!');
+            draw()
+            dealerHandValue = valueOfPlayerHand(activePlayerHand)
+            window.alert(`Dealer has ${dealerHandValue}`);
+        }
     }
+    
+    if(dealerHandValue >= 17 && dealerHandValue <= 21){
+        window.alert('Dealer will stay')
+    }else if(dealerHandValue > 21){
+        window.alert('Dealer Busted')
+    }
+
     endRound()
 }
 
@@ -210,17 +263,28 @@ function endRound(){
         playerTwoResult = 'lose'
     }
 
-    window.alert(`Kaden had: ${playerOneHandValue}, Kaia had: ${playerTwoHandValue}, dealer had: ${dealerHandValue}... Kaden you ${playerOneResult}, Kaia you ${playerTwoResult}`)
-    // console.log(`player 1 had: ${playerOneHandValue}`);
-    // console.log(`player 2 had: ${playerTwoHandValue}`)
-    // console.log(`dealer had: ${dealerHandValue}`)
-    // console.log(`player one you ${playerOneResult}, player two you ${playerTwoResult}`)
+    window.alert(`Player 1 had: ${playerOneHandValue}, player 2 had: ${playerTwoHandValue}, dealer had: ${dealerHandValue}... player 1 you ${playerOneResult}, player 2 you ${playerTwoResult}`)
 
-    if(playerOneResult == 'win' && playerOneResult == 'win'){
-        startTrivia()
-    }else{
-        resetGame()
+    if(playerOneResult == 'win'){
+        playerOneChipCount += playerOneBet * 2
+    }else if (playerOneResult == 'tie'){
+        playerOneChipCount += playerOneBet
     }
+
+    if(playerTwoResult == 'win'){
+        playerTwoChipCount += playerTwoBet * 2
+    }else if (playerTwoResult == 'tie'){
+        playerTwoChipCount += playerTwoBet
+    }
+
+    window.alert(`player 1 you now have ${playerOneChipCount}, player 2 you have ${playerTwoChipCount}`)
+
+    // This was to start the trivia round, disregard if you just want blackjack
+    // if(playerOneResult == 'win' && playerTwoResult == 'win'){
+        // startTrivia()
+    // }else{
+        resetGame()
+    // }
 }
 
 // when we start a new game, this will clear all hands and values then go start a new game
@@ -242,6 +306,25 @@ function resetGame(){
     playGame()
 }
 
+function playerOutOfMoney(){
+    if(playerOneChipCount <= 0){
+        window.alert('Player 1 is out of money')
+    }else if(playerTwoChipCount <= 0){
+        window.alert('Player 2 is out of money')
+    }
+
+    let startOver = window.prompt('reset chip counts and start new game? Y/N:')
+    if(startOver.toLowerCase() == 'y'){
+        playerOneChipCount = 100
+        playerTwoChipCount = 100
+
+        resetGame()
+    }else{
+        window.alert('Quitting game...')
+    }
+}
+
+// Christmas Trivia Game
 let answer = ''
 let questions = ['1','2','3','4','5','6','7','8','9','10', '11', '12', '13', '14', '15']
 let correctQuestions = []
